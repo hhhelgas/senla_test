@@ -42,39 +42,37 @@ public class CurrencyRate {
 
     public static Map<CurrencyEnum, Float> countRate(CurrencyEnum fromCurrency, float amount) {
         Map<CurrencyEnum, Float> rateMap = new HashMap<>();
-        float amountInUSD, rate = 0;
-
+        float amountInUSD = toUSD(fromCurrency, amount);
+        float rate = 0;
         for (CurrencyEnum currency : CurrencyEnum.values()) {
-            amountInUSD = toUSD(fromCurrency, amount);
-            rate = fromUSD(currency, amountInUSD);
+            rate = Math.abs(fromUSD(currency, amountInUSD));
             rateMap.put(currency, rate);
         }
 
         return rateMap;
     }
 
-    public static CurrencyEnum chooseCurrency() {
+    public static CurrencyEnum chooseCurrency(Scanner scanner) {
         System.out.println("Введите исходную валюту " + Arrays.toString(CurrencyEnum.values()) + ": ");
-        Scanner scanner = new Scanner(System.in);
         String currencyInput = scanner.nextLine().toUpperCase();
 
         try {
             return CurrencyEnum.valueOf(currencyInput);
         } catch (IllegalArgumentException e) {
             System.out.println("Неверная валюта, выберите из доступных: " + Arrays.toString(CurrencyEnum.values()));
-            return chooseCurrency(); // Рекурсия для повторного выбора
+            return chooseCurrency(scanner); // Рекурсия для повторного выбора
         }
     }
 
-    public static float inputAmount(CurrencyEnum fromCurrency) {
+    public static float inputAmount(CurrencyEnum fromCurrency, Scanner scanner) {
         try {
-            Scanner scanner = new Scanner(System.in);
             System.out.print("Введите сумму в " + fromCurrency + ": ");
             float amount = scanner.nextFloat();
+            scanner.nextLine();
 
-            if (amount < 0) {
+            if (amount < 0 || Float.compare(amount, -0.0f) == 0) {
                 System.out.println("Ошибка: сумма не может быть отрицательной. Введите неотрицательное число.");
-                return inputAmount(fromCurrency); // Возвращаем результат рекурсивного вызова для повторного ввода
+                return inputAmount(fromCurrency, scanner); // Возвращаем результат рекурсивного вызова для повторного ввода
             }
 
             return amount;
@@ -82,7 +80,8 @@ public class CurrencyRate {
         } catch (InputMismatchException e) {
             System.out.println("Ошибка: введено не неотрицательное вещественное число. " +
                     "Пожалуйста, введите неотрицательное вещественное  число.");
-            return inputAmount(fromCurrency); // Возвращаем результат рекурсивного вызова для повторного ввода
+            scanner.nextLine();
+            return inputAmount(fromCurrency, scanner); // Возвращаем результат рекурсивного вызова для повторного ввода
         }
     }
 }

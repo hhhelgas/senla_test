@@ -19,8 +19,6 @@ public class PasswordGenerator {
         if (length < 8 || length > 12) {
             throw new IllegalArgumentException("Недопустимая длина пароля. Пароль должен содержать от 8 до 12 символов");
         }
-
-
         this.length = length;
     }
 
