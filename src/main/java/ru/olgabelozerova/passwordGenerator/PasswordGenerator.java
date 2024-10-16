@@ -1,5 +1,8 @@
 package ru.olgabelozerova.passwordGenerator;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Random;
 
 public class PasswordGenerator {
@@ -24,12 +27,29 @@ public class PasswordGenerator {
 
     public String generate() {
         Random random = new Random();
-        StringBuilder password = new StringBuilder();
+        List<Character> password = new ArrayList<>();
 
-        for (int i = 0; i < length; i++) {
-            int index = random.nextInt(ALL_CHARACTERS.length());
-            password.append(ALL_CHARACTERS.charAt(index));
+        // Гарантируем наличие хотя бы одного символа из каждой категории
+        password.add(UPPER_CASE_LETTERS.charAt(random.nextInt(UPPER_CASE_LETTERS.length())));
+        password.add(LOWER_CASE_LETTERS.charAt(random.nextInt(LOWER_CASE_LETTERS.length())));
+        password.add(NUMBERS.charAt(random.nextInt(NUMBERS.length())));
+        password.add(SPECIAL_CHARACTERS.charAt(random.nextInt(SPECIAL_CHARACTERS.length())));
+
+        // Заполняем оставшиеся символы случайным образом из всех категорий
+        for (int i = 4; i < length; i++) {
+            password.add(ALL_CHARACTERS.charAt(random.nextInt(ALL_CHARACTERS.length())));
         }
-        return password.toString();
+
+        // Перемешиваем символы в пароле, чтобы они были в случайном порядке
+        Collections.shuffle(password);
+
+        // Преобразуем список символов в строку
+        StringBuilder passwordBuilder = new StringBuilder();
+        for (Character ch : password) {
+            passwordBuilder.append(ch);
+        }
+
+        return passwordBuilder.toString();
+
     }
 }
